@@ -2,7 +2,7 @@ package menu
 
 import (
 	"bufio"
-	"challenge-godb/db/manipulation"
+	"challenge-godb/db/master"
 	"challenge-godb/entity"
 	"challenge-godb/utils"
 	"fmt"
@@ -47,7 +47,7 @@ func CustomerManagement() {
 }
 
 func showCustomer() {
-	customers := manipulation.GetAllCustomer()
+	customers := master.GetAllCustomer()
 	fmt.Println("\nID", strings.Repeat(" ", 4), "Name", strings.Repeat(" ", 40), "No. HP", strings.Repeat(" ", 15))
 	fmt.Println(strings.Repeat("-", 80))
 	for _, customer := range customers {
@@ -76,7 +76,7 @@ func addNewCustomer() {
 	confirm := scanner.Text()
 
 	if strings.ToLower(confirm) == "y" {
-		manipulation.AddCustomer(newCustomer)
+		master.AddCustomer(newCustomer)
 	} else if strings.ToLower(confirm) == "n" {
 		fmt.Println("New Customer Data was not saved.")
 	} else {
@@ -96,7 +96,7 @@ func updateOneCustomer() {
 	scanner.Scan()
 	id := scanner.Text()
 
-	customer, err := manipulation.FindCustomerById(id)
+	customer, err := master.FindCustomerById(id)
 	if err != nil {
 		panic("Customer ID not found!")
 	} else {
@@ -121,7 +121,7 @@ func updateOneCustomer() {
 			if updatedCustomer.Contact != "" {
 				customer.Contact = updatedCustomer.Contact
 			}
-			manipulation.UpdateCustomer(customer)
+			master.UpdateCustomer(customer)
 		} else if strings.ToLower(confirm) == "n" {
 			fmt.Println("Customer Data was not saved.")
 		} else {
@@ -142,7 +142,7 @@ func deleteOneCustomer() {
 	scanner.Scan()
 	id := scanner.Text()
 
-	_, err := manipulation.FindCustomerById(id)
+	_, err := master.FindCustomerById(id)
 	if err != nil {
 		panic("Customer ID not found!")
 	} else {
@@ -151,7 +151,7 @@ func deleteOneCustomer() {
 		confirm := scanner.Text()
 
 		if strings.ToLower(confirm) == "y" {
-			manipulation.DeleteCustomer(id)
+			master.DeleteCustomer(id)
 		} else if strings.ToLower(confirm) == "n" {
 			fmt.Println("Customer Data was not deleted.")
 		} else {

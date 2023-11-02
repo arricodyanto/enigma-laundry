@@ -1,4 +1,4 @@
-package manipulation
+package master
 
 import (
 	"challenge-godb/db"

@@ -2,7 +2,7 @@ package menu
 
 import (
 	"bufio"
-	"challenge-godb/db/manipulation"
+	"challenge-godb/db/master"
 	"challenge-godb/entity"
 	"challenge-godb/utils"
 	"fmt"
@@ -47,7 +47,7 @@ func ServiceManagement() {
 }
 
 func showService() {
-	services := manipulation.GetAllService()
+	services := master.GetAllService()
 	fmt.Println("\nID", strings.Repeat(" ", 4), "Service", strings.Repeat(" ", 40), "Unit", strings.Repeat(" ", 4), "Price")
 	fmt.Println(strings.Repeat("-", 80))
 	for _, service := range services {
@@ -79,7 +79,7 @@ func addNewService() {
 	confirm := scanner.Text()
 
 	if strings.ToLower(confirm) == "y" {
-		manipulation.AddService(newService)
+		master.AddService(newService)
 	} else if strings.ToLower(confirm) == "n" {
 		fmt.Println("New Service Data was not saved.")
 	} else {
@@ -99,7 +99,7 @@ func updateOneService() {
 	scanner.Scan()
 	id := scanner.Text()
 
-	service, err := manipulation.FindServiceById(id)
+	service, err := master.FindServiceById(id)
 	if err != nil {
 		panic("Service ID not found!")
 	} else {
@@ -131,7 +131,7 @@ func updateOneService() {
 			if updatedService.Price != 0 {
 				service.Price = updatedService.Price
 			}
-			manipulation.UpdateService(service)
+			master.UpdateService(service)
 		} else if strings.ToLower(confirm) == "n" {
 			fmt.Println("Service Data was not saved.")
 		} else {
@@ -152,7 +152,7 @@ func deleteOneService() {
 	scanner.Scan()
 	id := scanner.Text()
 
-	_, err := manipulation.FindServiceById(id)
+	_, err := master.FindServiceById(id)
 	if err != nil {
 		panic("Service ID not found!")
 	} else {
@@ -161,7 +161,7 @@ func deleteOneService() {
 		confirm := scanner.Text()
 
 		if strings.ToLower(confirm) == "y" {
-			manipulation.DeleteService(id)
+			master.DeleteService(id)
 		} else if strings.ToLower(confirm) == "n" {
 			fmt.Println("Service Data was not deleted.")
 		} else {
