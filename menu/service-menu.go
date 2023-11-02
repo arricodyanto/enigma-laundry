@@ -36,7 +36,9 @@ func ServiceManagement() {
 	case 2:
 		addNewService()
 	case 3:
+		updateOneService()
 	case 4:
+		deleteOneService()
 	case 5:
 		fmt.Println("<- Back to Main Menu")
 	default:
@@ -82,5 +84,88 @@ func addNewService() {
 		fmt.Println("New Service Data was not saved.")
 	} else {
 		fmt.Println("Input is invalid!")
+	}
+}
+
+func updateOneService() {
+	showService()
+	fmt.Println(strings.Repeat("=", 80))
+
+	scanner := bufio.NewScanner(os.Stdin)
+	defer ServiceManagement()
+	defer utils.ErrorRecover()
+
+	fmt.Print("Enter Service ID you want to update : ")
+	scanner.Scan()
+	id := scanner.Text()
+
+	service, err := manipulation.FindServiceById(id)
+	if err != nil {
+		panic("Service ID not found!")
+	} else {
+		var updatedService entity.Service
+		fmt.Println("(Leave it blank if you don't want to change)")
+		fmt.Print("Enter Service Name : ")
+		scanner.Scan()
+		updatedService.Service = scanner.Text()
+
+		fmt.Print("Enter Service Unit (kg/buah) : ")
+		scanner.Scan()
+		updatedService.Unit = scanner.Text()
+
+		fmt.Print("Enter Service Price : ")
+		scanner.Scan()
+		updatedService.Price, _ = strconv.Atoi(scanner.Text())
+
+		fmt.Print("\nAre you sure want to update this service (y/n)? ")
+		scanner.Scan()
+		confirm := scanner.Text()
+
+		if strings.ToLower(confirm) == "y" {
+			if updatedService.Service != "" {
+				service.Service = updatedService.Service
+			}
+			if updatedService.Unit != "" {
+				service.Unit = updatedService.Unit
+			}
+			if updatedService.Price != 0 {
+				service.Price = updatedService.Price
+			}
+			manipulation.UpdateService(service)
+		} else if strings.ToLower(confirm) == "n" {
+			fmt.Println("Service Data was not saved.")
+		} else {
+			fmt.Println("Input is invalid!")
+		}
+	}
+}
+
+func deleteOneService() {
+	showService()
+	fmt.Println("\n" + strings.Repeat("=", 80))
+
+	scanner := bufio.NewScanner(os.Stdin)
+	defer ServiceManagement()
+	defer utils.ErrorRecover()
+
+	fmt.Print("Enter Service Id you want to delete : ")
+	scanner.Scan()
+	id := scanner.Text()
+
+	_, err := manipulation.FindServiceById(id)
+	if err != nil {
+		panic("Service ID not found!")
+	} else {
+		fmt.Print("\nAre you sure want to delete this service (y/n)? ")
+		scanner.Scan()
+		confirm := scanner.Text()
+
+		if strings.ToLower(confirm) == "y" {
+			manipulation.DeleteService(id)
+		} else if strings.ToLower(confirm) == "n" {
+			fmt.Println("Service Data was not deleted.")
+		} else {
+			fmt.Println("Input is invalid!")
+		}
 	}
 }

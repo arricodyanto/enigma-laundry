@@ -101,12 +101,12 @@ func updateOneCustomer() {
 		panic("Customer ID not found!")
 	} else {
 		var updatedCustomer entity.Customer
-		fmt.Println("(Leave blank if you don't want to change)")
+		fmt.Println("(Leave it blank if you don't want to change)")
 		fmt.Print("Enter Customer Name : ")
 		scanner.Scan()
 		updatedCustomer.Name = scanner.Text()
 
-		fmt.Printf("Enter Customer Phone : ")
+		fmt.Print("Enter Customer Phone : ")
 		scanner.Scan()
 		updatedCustomer.Contact = scanner.Text()
 
