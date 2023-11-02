@@ -30,6 +30,8 @@ func ShowMenu() {
 		CustomerManagement()
 	case 2:
 		ServiceManagement()
+	case 3:
+		ShowAllTransaction()
 	case 5:
 		exitProgram()
 	default:

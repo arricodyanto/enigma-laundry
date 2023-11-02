@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"database/sql"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 func ErrorRecover() error {
@@ -23,6 +25,19 @@ func IntegerToRupiahFormatter(number int) string {
 			formatted += "."
 		}
 	}
-
 	return "Rp " + formatted
+}
+
+func Validate(err error, message string, tx *sql.Tx) {
+	if err != nil {
+		tx.Rollback()
+		fmt.Println(err, "Transaction has been rolled back")
+	} else {
+		fmt.Println("Successfully" + message + "data!")
+	}
+}
+
+func FormattedDate(time time.Time) string {
+	result := time.Format("02-01-2006")
+	return result
 }
