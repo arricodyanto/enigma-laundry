@@ -82,7 +82,7 @@ func UpdateCustomer(customer entity.Customer) {
 	if err != nil {
 		panic(err)
 	} else {
-		fmt.Println("Successfull Update Data!")
+		fmt.Println("Successfully Update Data!")
 	}
 }
 

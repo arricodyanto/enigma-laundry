@@ -2,7 +2,7 @@ package entity
 
 import "time"
 
-type Transaction struct {
+type Bill struct {
 	Id            int
 	Customer_Id   int
 	EntryDate     time.Time

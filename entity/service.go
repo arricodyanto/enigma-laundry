@@ -1,6 +1,6 @@
 package entity
 
-type Pelayanan struct {
+type Service struct {
 	Id      int
 	Service string
 	Unit    string

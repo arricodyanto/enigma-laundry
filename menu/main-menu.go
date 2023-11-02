@@ -28,6 +28,8 @@ func ShowMenu() {
 	switch menu {
 	case 1:
 		CustomerManagement()
+	case 2:
+		ServiceManagement()
 	case 5:
 		exitProgram()
 	default:
