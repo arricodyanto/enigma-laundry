@@ -6,8 +6,8 @@ CREATE TABLE mst_customer (
 
 CREATE TABLE mst_service (
     id SERIAL PRIMARY KEY,
-    service VARCHAR(150) NOT NULL,
-    unit VARCHAR(5) NOT NULL,
+    service VARCHAR(100) NOT NULL,
+    unit VARCHAR(7) NOT NULL,
     price INT NOT NULL
 );
 
