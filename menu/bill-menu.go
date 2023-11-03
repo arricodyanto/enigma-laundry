@@ -36,18 +36,18 @@ func showBillDetail() {
 		ShowMenu()
 	} else {
 		billCustomerDetails := transaction.GetBillDetailsByCustomerId(strconv.Itoa(id))
-
-		for _, billCustomerDetail := range billCustomerDetails {
-			fmt.Println(billCustomerDetail)
+		if len(billCustomerDetails) == 0 {
+			fmt.Print("\nTransaction Detail is empty.\n\n")
+		} else {
 			fmt.Println(strings.Repeat("=", 80))
 			fmt.Println(strings.Repeat("=", 32), "Enigma Laundry", strings.Repeat("=", 32))
 			fmt.Println(strings.Repeat("=", 80))
 
 			fmt.Println("\n"+strings.Repeat("-", 34), strings.Repeat(" ", 10), strings.Repeat("-", 34))
-			fmt.Println("| No", strings.Repeat(" ", 15-len("No")), "|", billCustomerDetail.BillDetail.Bill_Id, strings.Repeat(" ", 10-len(strconv.Itoa(billCustomerDetail.Bill_Id))), "|", strings.Repeat(" ", 10), "| Nama Cust", strings.Repeat(" ", 10-len("Nama Cust")), "|", billCustomerDetail.Customer.Name, strings.Repeat(" ", 15-len(billCustomerDetail.Customer.Name)), "|")
-			fmt.Println("| Tanggal Masuk", strings.Repeat(" ", 15-len("Tanggal Masuk")), "|", utils.FormattedDate(billCustomerDetail.Bill.EntryDate), strings.Repeat(" ", 10-len(utils.FormattedDate(billCustomerDetail.Bill.EntryDate))), "|", strings.Repeat(" ", 10), "| No HP", strings.Repeat(" ", 10-len("No HP")), "|", billCustomerDetail.Customer.Contact, strings.Repeat(" ", 15-len(billCustomerDetail.Customer.Contact)), "|")
-			fmt.Println("| Tanggal Selesai", strings.Repeat(" ", 15-len("Tanggal Selesai")), "|", utils.FormattedDate(billCustomerDetail.Bill.OutDate), strings.Repeat(" ", 10-len(utils.FormattedDate(billCustomerDetail.Bill.OutDate))), "|", strings.Repeat(" ", 10), strings.Repeat("-", 34))
-			fmt.Println("| Diterima Oleh", strings.Repeat(" ", 15-len("Diterima Oleh")), "|", billCustomerDetail.Bill.RecipientName, strings.Repeat(" ", 10-len(billCustomerDetail.Bill.RecipientName)), "|")
+			fmt.Println("| No", strings.Repeat(" ", 15-len("No")), "|", billCustomerDetails[0].BillDetail.Bill_Id, strings.Repeat(" ", 10-len(strconv.Itoa(billCustomerDetails[0].Bill_Id))), "|", strings.Repeat(" ", 10), "| Nama Cust", strings.Repeat(" ", 10-len("Nama Cust")), "|", billCustomerDetails[0].Customer.Name, strings.Repeat(" ", 15-len(billCustomerDetails[0].Customer.Name)), "|")
+			fmt.Println("| Tanggal Masuk", strings.Repeat(" ", 15-len("Tanggal Masuk")), "|", utils.FormattedDate(billCustomerDetails[0].Bill.EntryDate), strings.Repeat(" ", 10-len(utils.FormattedDate(billCustomerDetails[0].Bill.EntryDate))), "|", strings.Repeat(" ", 10), "| No HP", strings.Repeat(" ", 10-len("No HP")), "|", billCustomerDetails[0].Customer.Contact, strings.Repeat(" ", 15-len(billCustomerDetails[0].Customer.Contact)), "|")
+			fmt.Println("| Tanggal Selesai", strings.Repeat(" ", 15-len("Tanggal Selesai")), "|", utils.FormattedDate(billCustomerDetails[0].Bill.OutDate), strings.Repeat(" ", 10-len(utils.FormattedDate(billCustomerDetails[0].Bill.OutDate))), "|", strings.Repeat(" ", 10), strings.Repeat("-", 34))
+			fmt.Println("| Diterima Oleh", strings.Repeat(" ", 15-len("Diterima Oleh")), "|", billCustomerDetails[0].Bill.RecipientName, strings.Repeat(" ", 10-len(billCustomerDetails[0].Bill.RecipientName)), "|")
 			fmt.Println(strings.Repeat("-", 34))
 
 			fmt.Println("\n\nNo", "  ", "Pelayanan", strings.Repeat(" ", 20), "Jumlah", "Satuan", "  ", "Harga", strings.Repeat(" ", 10-len("Harga")), "Total")
@@ -57,7 +57,7 @@ func showBillDetail() {
 				fmt.Println(billDetail.BillDetail.Id, strings.Repeat(" ", 2-len(strconv.Itoa(billDetail.BillDetail.Id))), billDetail.Service.Service, strings.Repeat(" ", 33-len(billDetail.Service.Service)), billDetail.BillDetail.Amount, strings.Repeat(" ", 3-len(strconv.Itoa(billDetail.BillDetail.Amount))), billDetail.Service.Unit, strings.Repeat(" ", 8-len(billDetail.Service.Unit)), utils.IntegerToRupiahFormatter(billDetail.Service.Price), strings.Repeat(" ", 10-len(utils.IntegerToRupiahFormatter(billDetail.Service.Price))), utils.IntegerToRupiahFormatter(billDetail.BillDetail.Total))
 			}
 
-			fmt.Println("\n\n", strings.Repeat(" ", 51), "Total Harga ", utils.IntegerToRupiahFormatter(billCustomerDetail.Bill.TotalBill))
+			fmt.Println("\n\n", strings.Repeat(" ", 51), "Total Harga ", utils.IntegerToRupiahFormatter(billCustomerDetails[0].Bill.TotalBill))
 			fmt.Print(strings.Repeat("-", 80), "\n", strings.Repeat("=", 80), "\n\n\n")
 		}
 	}
