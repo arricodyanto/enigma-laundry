@@ -56,7 +56,7 @@ go run .
 Berikut adalah beberapa fitur yang bisa digunakan pada aplikasi ini, yang akan
 muncul di menu utama setelah aplikasi dijalankan.
 
-### Customer Management
+### 1. Customer Management
 
 Menu ini dapat digunakan untuk melakukan management terhadap table master
 mst_customer. Anda bisa melakukan CREATE, READ, UPDATE, dan DELETE terhadap
@@ -65,7 +65,7 @@ ditambahkan CASCADE ON DELETE, sehingga data pada table lain yang terelasi
 dengan customer terkait yang sedang dihapus juga akan ikut hilang, yaitu data
 pada tabel trx_bill_detail, dan trx_bill.
 
-### Service Management
+### 2. Service Management
 
 Menu ini dapat digunakan untuk melakukan managament terhadap table master
 mst_service. Tabel ini digunakan untuk menyimpan jenis layanan yang dapat
@@ -77,20 +77,20 @@ Anda menghapus salah satu service yang telah digunakan pada tabel trx_bill dan
 trx_bill_detail, maka hal ini juga akan mengupdate dan mengkalkulasi ulang harga
 yang telah tersimpan.
 
-### Show All Transaction
+### 3. Show All Transaction
 
 Pada menu ini Anda bisa melihat semua transaksi yang terekam pada database. Anda
 juga bisa melihat detail dan layanan apa saja yang digunakan dalam satu buah
 transaksi.
 
-### Insert New Transaction
+### 4. Insert New Transaction
 
 Menu ini memungkinkan Anda untuk mencatat setiap transaksi baru di toko 'Enigma
 Laundry.' Pada menu ini Anda bisa melakukan perulangan detail layanan yang
 digunakan pada sebuah transaksi. Fitur ini hanya bisa digunakan untuk customer
 yang telah terdaftar.
 
-### Exit
+### 5. Exit
 
 Exit Application.
 
