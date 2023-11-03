@@ -18,7 +18,7 @@ CREATE TABLE trx_bill (
     out_date DATE NOT NULL,
     recipient_name VARCHAR(50) NOT NULL,
     total_bill INT NOT NULL,
-    FOREIGN KEY (customer_id) REFERENCES mst_customer (id)
+    FOREIGN KEY (customer_id) REFERENCES mst_customer (id) ON DELETE CASCADE
 );
 
 CREATE TABLE trx_bill_detail (
@@ -27,6 +27,6 @@ CREATE TABLE trx_bill_detail (
     service_id INT NOT NULL,
     amount INT NOT NULL,
     total INT NOT NULL,
-    FOREIGN KEY (bill_id) REFERENCES trx_bill (id),
-    FOREIGN KEY (service_id) REFERENCES mst_service (id)
+    FOREIGN KEY (bill_id) REFERENCES trx_bill (id) ON DELETE CASCADE,
+    FOREIGN KEY (service_id) REFERENCES mst_service (id) ON DELETE CASCADE
 );
