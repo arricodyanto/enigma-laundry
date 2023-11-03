@@ -3,6 +3,7 @@ package master
 import (
 	"challenge-godb/db"
 	"challenge-godb/entity"
+	"challenge-godb/utils"
 	"database/sql"
 	"fmt"
 )
@@ -60,16 +61,37 @@ func GetAllCustomer() []entity.Customer {
 func AddCustomer(customer entity.Customer) {
 	db := db.ConnectDB()
 	defer db.Close()
-	var err error
 
-	sqlStatement := "INSERT INTO mst_customer (name, contact) VALUES($1, $2);"
+	tx, err := db.Begin()
+	if err != nil {
+		panic(err)
+	}
+	newId := getMaxIdCustomer(tx)
+	insertNewCustomer(newId, customer, tx)
 
-	_, err = db.Exec(sqlStatement, customer.Name, customer.Contact)
+	err = tx.Commit()
 	if err != nil {
 		panic(err)
 	} else {
-		fmt.Println("Successfully Saved New Customer Data!")
+		fmt.Println("Transaction Commited!")
 	}
+}
+
+func getMaxIdCustomer(tx *sql.Tx) int {
+	sqlStatement := "SELECT MAX(id) FROM mst_customer;"
+
+	maxId := 0
+	err := tx.QueryRow(sqlStatement).Scan(&maxId)
+
+	utils.Validate(err, "Get New ID for Customer", tx)
+	return maxId + 1
+}
+
+func insertNewCustomer(id int, customer entity.Customer, tx *sql.Tx) {
+	sqlStatement := "INSERT INTO mst_customer (id, name, contact) VALUES($1, $2, $3);"
+
+	_, err := tx.Exec(sqlStatement, id, customer.Name, customer.Contact)
+	utils.Validate(err, "Saved New Customer", tx)
 }
 
 func UpdateCustomer(customer entity.Customer) {
@@ -90,12 +112,25 @@ func DeleteCustomer(id string) {
 	db := db.ConnectDB()
 	defer db.Close()
 
-	sqlStatement := "DELETE FROM mst_customer WHERE id = $1;"
+	tx, err := db.Begin()
+	if err != nil {
+		panic(err)
+	}
 
-	_, err := db.Exec(sqlStatement, id)
+	deleteOneCustomer(id, tx)
+
+	err = tx.Commit()
 	if err != nil {
 		panic(err)
 	} else {
-		fmt.Println("Successfully Deleted One Customer!")
+		fmt.Println("Transaction Commited!")
 	}
+
+}
+
+func deleteOneCustomer(id string, tx *sql.Tx) {
+	sqlStatement := "DELETE FROM mst_customer WHERE id = $1;"
+
+	_, err := tx.Exec(sqlStatement, id)
+	utils.Validate(err, "Deleted One Customer", tx)
 }

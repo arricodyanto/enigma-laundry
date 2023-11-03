@@ -33,7 +33,7 @@ func Validate(err error, message string, tx *sql.Tx) {
 		tx.Rollback()
 		fmt.Println(err, "Transaction has been rolled back")
 	} else {
-		fmt.Println("Successfully" + message + "data!")
+		fmt.Println("Successfully " + message + " data!")
 	}
 }
 

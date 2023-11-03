@@ -40,7 +40,7 @@ func CustomerManagement() {
 	case 4:
 		deleteOneCustomer()
 	case 5:
-		fmt.Println("<- Back to Main Menu")
+		fmt.Println("<<- Back to Main Menu")
 	default:
 		fmt.Printf("Menu '%d' does not exist\n", menu)
 	}

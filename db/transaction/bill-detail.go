@@ -22,7 +22,7 @@ func scanBillCustomerDetail(rows *sql.Rows) []BillCustomerDetail {
 		service := entity.Service{}
 		customer := entity.Customer{}
 
-		err := rows.Scan(&billDetail.Id, &bill.Id, &customer.Id, &customer.Name, &customer.Contact, &service.Service, &billDetail.Amount, &service.Unit, &service.Price, &billDetail.Total, &bill.TotalBill, &bill.RecipientName, &bill.EntryDate, &bill.OutDate)
+		err := rows.Scan(&billDetail.Id, &billDetail.Bill_Id, &customer.Id, &customer.Name, &customer.Contact, &service.Service, &billDetail.Amount, &service.Unit, &service.Price, &billDetail.Total, &bill.TotalBill, &bill.RecipientName, &bill.EntryDate, &bill.OutDate)
 		if err != nil {
 			panic(err)
 		}
@@ -46,7 +46,7 @@ func GetBillDetailsByCustomerId(id string) []BillCustomerDetail {
 	db := db.ConnectDB()
 	defer db.Close()
 
-	sqlStatement := "SELECT d.id, b.id, c.id, c.name, c.contact, s.service, d.amount, s.unit, s.price, d.total, b.total_bill, b.recipient_name, b.entry_date, b.out_date FROM trx_bill_detail AS d JOIN trx_bill AS b ON b.id=d.bill_id JOIN mst_service AS s ON d.service_id=s.id JOIN mst_customer AS c ON b.customer_id=c.id WHERE c.id=$1;"
+	sqlStatement := "SELECT d.id, d.bill_id, c.id, c.name, c.contact, s.service, d.amount, s.unit, s.price, d.total, b.total_bill, b.recipient_name, b.entry_date, b.out_date FROM trx_bill_detail AS d JOIN trx_bill AS b ON b.id=d.bill_id JOIN mst_service AS s ON d.service_id=s.id JOIN mst_customer AS c ON b.customer_id=c.id WHERE c.id=$1;"
 
 	rows, err := db.Query(sqlStatement, id)
 	if err != nil {

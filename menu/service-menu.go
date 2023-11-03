@@ -40,7 +40,8 @@ func ServiceManagement() {
 	case 4:
 		deleteOneService()
 	case 5:
-		fmt.Println("<- Back to Main Menu")
+		fmt.Println("<<- Back to Main Menu")
+		ShowMenu()
 	default:
 		fmt.Printf("Menu '%d' does not exist\n", menu)
 	}
