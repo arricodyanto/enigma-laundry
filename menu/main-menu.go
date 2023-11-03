@@ -32,6 +32,8 @@ func ShowMenu() {
 		ServiceManagement()
 	case 3:
 		ShowAllTransaction()
+	case 4:
+		AddNewTransaction()
 	case 5:
 		exitProgram()
 	default:

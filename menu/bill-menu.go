@@ -2,12 +2,15 @@ package menu
 
 import (
 	"bufio"
+	"challenge-godb/db"
 	"challenge-godb/db/transaction"
+	"challenge-godb/entity"
 	"challenge-godb/utils"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func ShowAllTransaction() {
@@ -53,8 +56,8 @@ func showBillDetail() {
 			fmt.Println("\n\nNo", "  ", "Pelayanan", strings.Repeat(" ", 20), "Jumlah", "Satuan", "  ", "Harga", strings.Repeat(" ", 10-len("Harga")), "Total")
 			fmt.Println(strings.Repeat("-", 80))
 
-			for _, billDetail := range billCustomerDetails {
-				fmt.Println(billDetail.BillDetail.Id, strings.Repeat(" ", 2-len(strconv.Itoa(billDetail.BillDetail.Id))), billDetail.Service.Service, strings.Repeat(" ", 33-len(billDetail.Service.Service)), billDetail.BillDetail.Amount, strings.Repeat(" ", 3-len(strconv.Itoa(billDetail.BillDetail.Amount))), billDetail.Service.Unit, strings.Repeat(" ", 8-len(billDetail.Service.Unit)), utils.IntegerToRupiahFormatter(billDetail.Service.Price), strings.Repeat(" ", 10-len(utils.IntegerToRupiahFormatter(billDetail.Service.Price))), utils.IntegerToRupiahFormatter(billDetail.BillDetail.Total))
+			for i, billDetail := range billCustomerDetails {
+				fmt.Println(i+1, strings.Repeat(" ", 4-len(strconv.Itoa(billDetail.BillDetail.Id))), billDetail.Service.Service, strings.Repeat(" ", 31-len(billDetail.Service.Service)), billDetail.BillDetail.Amount, strings.Repeat(" ", 3-len(strconv.Itoa(billDetail.BillDetail.Amount))), billDetail.Service.Unit, strings.Repeat(" ", 8-len(billDetail.Service.Unit)), utils.IntegerToRupiahFormatter(billDetail.Service.Price), strings.Repeat(" ", 10-len(utils.IntegerToRupiahFormatter(billDetail.Service.Price))), utils.IntegerToRupiahFormatter(billDetail.BillDetail.Total))
 			}
 
 			fmt.Println("\n\n", strings.Repeat(" ", 51), "Total Harga ", utils.IntegerToRupiahFormatter(billCustomerDetails[0].Bill.TotalBill))
@@ -71,5 +74,100 @@ func showBillDetail() {
 		ShowAllTransaction()
 	} else {
 		fmt.Println("<<- Back to Main Menu")
+	}
+}
+
+func AddNewTransaction() {
+	db := db.ConnectDB()
+	defer db.Close()
+
+	tx, err := db.Begin()
+	if err != nil {
+		panic(err)
+	}
+
+	scanner := bufio.NewScanner(os.Stdin)
+	newBillId := transaction.GetMaxIdBill(tx)
+	newBill := entity.Bill{}
+	newBillDetail := entity.BillDetail{}
+
+	showCustomer()
+	fmt.Println()
+
+	fmt.Print("Enter Customer ID that making the transaction : ")
+	scanner.Scan()
+	newBill.Customer_Id, _ = strconv.Atoi(scanner.Text())
+
+	fmt.Print("Enter Entry Date (Now? y/n) : ")
+	scanner.Scan()
+	choice := scanner.Text()
+	if strings.ToLower(choice) == "y" {
+		newBill.EntryDate = time.Now()
+	} else if strings.ToLower(choice) == "n" {
+		fmt.Print("Enter Entry Date (yyyy-mm-dd) : ")
+		scanner.Scan()
+		newBill.EntryDate, _ = time.Parse("2006-01-02", scanner.Text())
+	} else {
+		fmt.Println("Input is invalid! Start over..")
+		AddNewTransaction()
+	}
+
+	fmt.Print("Enter Out Date (yyyy-mm-dd) : ")
+	scanner.Scan()
+	newBill.OutDate, _ = time.Parse("2006-01-02", scanner.Text())
+
+	fmt.Print("Enter Recipient Name : ")
+	scanner.Scan()
+	newBill.RecipientName = scanner.Text()
+
+	transaction.AddNewBill(newBill, tx)
+
+	err = tx.Commit()
+
+	if err != nil {
+		panic(err)
+	} else {
+		fmt.Println("Transaction Commited!")
+	}
+
+	for {
+		tx, err := db.Begin()
+		if err != nil {
+			panic(err)
+		}
+
+		showService()
+		fmt.Println()
+
+		newBillDetail.Bill_Id = newBillId
+
+		fmt.Print("Enter Service ID : ")
+		scanner.Scan()
+		newBillDetail.Service_Id, _ = strconv.Atoi(scanner.Text())
+
+		fmt.Print("Enter the Amount according to the Units written (number only) : ")
+		scanner.Scan()
+		newBillDetail.Amount, _ = strconv.Atoi(scanner.Text())
+
+		newBillDetail.Total = transaction.GetTotalPriceService(newBillDetail.Service_Id, newBillDetail.Amount, tx)
+
+		transaction.AddNewBillDetail(newBillDetail, tx)
+		transaction.UpdateBill(newBillId, tx)
+
+		err = tx.Commit()
+
+		if err != nil {
+			panic(err)
+		} else {
+			fmt.Println("Transaction Commited!")
+		}
+
+		fmt.Print("Do you want to enter the transaction details again (y/n) ? ")
+		scanner.Scan()
+		repeat := scanner.Text()
+
+		if strings.ToLower(repeat) == "n" {
+			break
+		}
 	}
 }

@@ -3,6 +3,7 @@ package transaction
 import (
 	"challenge-godb/db"
 	"challenge-godb/entity"
+	"challenge-godb/utils"
 	"database/sql"
 )
 
@@ -46,7 +47,7 @@ func GetBillDetailsByCustomerId(id string) []BillCustomerDetail {
 	db := db.ConnectDB()
 	defer db.Close()
 
-	sqlStatement := "SELECT d.id, d.bill_id, c.id, c.name, c.contact, s.service, d.amount, s.unit, s.price, d.total, b.total_bill, b.recipient_name, b.entry_date, b.out_date FROM trx_bill_detail AS d JOIN trx_bill AS b ON b.id=d.bill_id JOIN mst_service AS s ON d.service_id=s.id JOIN mst_customer AS c ON b.customer_id=c.id WHERE c.id=$1;"
+	sqlStatement := "SELECT d.id, d.bill_id, c.id, c.name, c.contact, s.service, d.amount, s.unit, s.price, d.total, b.total_bill, b.recipient_name, b.entry_date, b.out_date FROM trx_bill_detail AS d JOIN trx_bill AS b ON b.id=d.bill_id JOIN mst_service AS s ON d.service_id=s.id JOIN mst_customer AS c ON b.customer_id=c.id WHERE d.bill_id=$1;"
 
 	rows, err := db.Query(sqlStatement, id)
 	if err != nil {
@@ -58,32 +59,35 @@ func GetBillDetailsByCustomerId(id string) []BillCustomerDetail {
 	return billCustomerDetails
 }
 
-// func GetBillCustomerById(id string) ([]BillCustomerDetail, error) {
-// 	db := db.ConnectDB()
-// 	defer db.Close()
+func AddNewBillDetail(billDetail entity.BillDetail, tx *sql.Tx) {
+	newId := getMaxIdBillDetail(tx)
+	insertNewBillDetail(newId, billDetail, tx)
+}
 
-// 	sqlStatement := "SELECT d.id, b.id, c.name, c.contact, s.service, d.amount, s.unit, d.total, b.total_bill, b.recipient_name, b.entry_date, b.out_date FROM trx_bill_detail AS d JOIN trx_bill AS b ON b.id=d.bill_id JOIN mst_service AS s ON d.service_id=s.id JOIN mst_customer AS c ON b.customer_id=c.id WHERE d.id = $1;"
+func getMaxIdBillDetail(tx *sql.Tx) int {
+	sqlStatement := "SELECT MAX(id) FROM trx_bill_detail;"
 
-// 	// rows, err := db.Query(sqlStatement, id)
-// 	billDetail := entity.BillDetail{}
-// 	bill := entity.Bill{}
-// 	service := entity.Service{}
-// 	customer := entity.Customer{}
+	maxId := 0
+	err := tx.QueryRow(sqlStatement).Scan(&maxId)
 
-// 	err := db.QueryRow(sqlStatement, id).Scan(&billDetail.Id, &bill.Id, &customer.Name, &customer.Contact, &service.Service, &billDetail.Amount, &service.Unit, &billDetail.Total, &bill.TotalBill, &bill.RecipientName, &bill.EntryDate, &bill.OutDate)
+	utils.Validate(err, "Get New ID for Bill Detail", tx)
+	return maxId + 1
+}
 
-// 	billCustomerDetails := []BillCustomerDetail{}
+func insertNewBillDetail(id int, billDetail entity.BillDetail, tx *sql.Tx) {
+	sqlStatement := "INSERT INTO trx_bill_detail (id, bill_id, service_id, amount, total) VALUES ($1, $2, $3, $4, $5);"
 
-// 	billCustomerDetail := BillCustomerDetail{
-// 		BillDetail: billDetail,
-// 		Bill:       bill,
-// 		Service:    service,
-// 		Customer:   customer,
-// 	}
-// 	billCustomerDetails = append(billCustomerDetails, billCustomerDetail)
+	_, err := tx.Exec(sqlStatement, id, billDetail.Bill_Id, billDetail.Service_Id, billDetail.Amount, billDetail.Total)
+	utils.Validate(err, "Saved New Bill Detail", tx)
+}
 
-// 	if err != nil {
-// 		return billCustomerDetails, err
-// 	}
-// 	return billCustomerDetails, nil
-// }
+func GetTotalPriceService(id int, amount int, tx *sql.Tx) int {
+	sqlStatement := "SELECT price FROM mst_service WHERE id = $1;"
+
+	price := 0
+	err := tx.QueryRow(sqlStatement, id).Scan(&price)
+	utils.Validate(err, "Get The Price Service", tx)
+
+	totalPrice := amount * price
+	return totalPrice
+}
